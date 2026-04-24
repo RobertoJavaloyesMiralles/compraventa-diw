@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+!.env.example
+public/build/
+.vite/
+client/.vite/
+logs/
+*.log
+coverage/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
