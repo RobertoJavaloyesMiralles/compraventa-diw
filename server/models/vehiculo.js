@@ -1,5 +1,12 @@
 import mongoose from 'mongoose';
 
+let comentarioSchema = new mongoose.Schema({
+    nick: { type: String, required: true },
+    texto: { type: String, required: true },
+    valoracion: { type: Number, required: true, min: 1, max: 5 },
+    fecha: { type: Date, default: Date.now }
+});
+
 let vehiculoSchema = new mongoose.Schema({
     matricula: {
         type: String,
@@ -47,7 +54,8 @@ let vehiculoSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: ["Deportivo", "SUV", "Compacto", "Sedán", "Trial", "Trail", "Moto-Cross", "Scooter", "Deportiva"]        
-    }
+    },
+    comentarios: [comentarioSchema]
 });
 
 

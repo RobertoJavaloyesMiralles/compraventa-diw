@@ -7,6 +7,7 @@ import methodOverride from 'method-override'
 
 import connectMongo from './config/mongoose.js'
 import indexRouter from './routes/vehiculos.js'
+
 import { viteAsset, viteCssFiles, isDev } from './utils/vite-assets.js'
 
 dotenv.config()
