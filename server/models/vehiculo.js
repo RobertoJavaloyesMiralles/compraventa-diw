@@ -90,14 +90,12 @@ let vehiculoSchema = new mongoose.Schema({
         required: true,
         enum: ["Deportivo", "SUV", "Compacto", "Sedán", "Trial", "Trail", "Moto-Cross", "Scooter", "Deportiva"]
     },
-    imagenes: {
-        type: [String],
-        required: true,
-    }
 });
 
 const Vehiculo = mongoose.model('vehiculo', vehiculoSchema);
 const Marca = mongoose.model('marca', marcaSchema);
 const Modelo = mongoose.model('modelo', modeloSchema);
+
+export default Vehiculo;
 
 export { Vehiculo, Marca, Modelo };
