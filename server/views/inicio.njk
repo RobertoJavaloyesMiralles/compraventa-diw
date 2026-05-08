@@ -1,0 +1,122 @@
+{% extends "base.njk" %}
+
+{% block contenido %}
+
+<section class="hero-section text-center">
+    <div class="container animate-fade-in">
+        <h1 class="display-4 fw-bold mb-3 mt-5">Encuentra tu nuevo vehículo</h1>
+        <p class="lead opacity-75 mb-5">Explora nuestros coches y motos.</p>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="home-search-container">
+                    <form action="/catalogo" method="GET">
+                        <div class="row g-4 align-items-end">
+                            <!-- Buscador Principal -->
+                            <div class="col-12 mb-2">
+                                <div class="text-start mb-2">
+                                    <label class="form-label fw-bold text-primary small uppercase">¿Qué vehículo estás buscando?</label>
+                                </div>
+                                <div class="input-group input-group-lg shadow-sm rounded-4 overflow-hidden">
+                                    <span class="input-group-text bg-white border-end-0 ps-4 text-muted">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input
+                                        type="text"
+                                        name="texto"
+                                        class="form-control border-start-0 ps-1"
+                                        placeholder="Marca, modelo, matrícula..."
+                                        value="{{ query.texto if query else '' }}"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Filtros rápidos -->
+                            <div class="col-md-3">
+                                <div class="text-start mb-2">
+                                    <label class="form-label fw-semibold small">Tipo</label>
+                                </div>
+                                <select name="tipo" class="form-select">
+                                    <option value="">Cualquier tipo</option>
+                                    <option value="Coche" {{ 'selected' if query.tipo == 'Coche' }}>Turismo</option>
+                                    <option value="Moto" {{ 'selected' if query.tipo == 'Moto' }}>Motocicleta</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="text-start mb-2">
+                                    <label class="form-label fw-semibold small">Combustible</label>
+                                </div>
+                                <select name="combustible" class="form-select">
+                                    <option value="">Cualquier motor</option>
+                                    <option value="gasolina" {{ 'selected' if query.combustible == 'gasolina' }}>Gasolina</option>
+                                    <option value="diesel" {{ 'selected' if query.combustible == 'diesel' }}>Diésel</option>
+                                    <option value="electrico" {{ 'selected' if query.combustible == 'electrico' }}>Eléctrico</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="text-start mb-2">
+                                    <label class="form-label fw-semibold small">Marca</label>
+                                </div>
+                                <select name="marca" class="form-select">
+                                    <option value="">Todas las marcas</option>
+                                    {% for m in marcas %}
+                                        <option value="{{ m._id }}" {{ 'selected' if query.marca == m._id|string }}>
+                                            {{ m.marca }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100 py-3 shadow-sm">
+                                    <i class="fas fa-paper-plane me-2"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filtros Avanzados -->
+                        <div class="mt-4 pt-3 border-top border-light">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2 text-muted small"><i class="fas fa-tags me-1"></i> Precio máx:</span>
+                                        <input
+                                            type="range"
+                                            name="precioMax"
+                                            class="form-range"
+                                            min="0"
+                                            max="100000"
+                                            step="5000"
+                                            value="{{ query.precioMax if query.precioMax else '100000' }}"
+                                            oninput="this.nextElementSibling.value = this.value + ' €'"
+                                        >
+                                        <output class="ms-2 fw-bold text-primary" style="min-width: 80px;">{{ query.precioMax if query.precioMax else '100000' }} €</output>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2 text-muted small"><i class="fas fa-calendar-alt me-1"></i> Año mín:</span>
+                                        <input
+                                            type="number"
+                                            name="añoMin"
+                                            class="form-control form-control-sm border-0 bg-light"
+                                            placeholder="2015"
+                                            value="{{ query.añoMin if query else '' }}"
+                                            min="1950"
+                                            style="width: 100px;"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}
+
