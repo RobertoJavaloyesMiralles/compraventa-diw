@@ -9,6 +9,8 @@ import connectMongo from './config/mongoose.js'
 import indexRouter from './routes/vehiculos.js'
 import { viteAsset, viteCssFiles, isDev } from './utils/vite-assets.js'
 
+import usuarioRouter from './routes/usuarios.js';
+
 dotenv.config()
 
 const app = express()
@@ -50,3 +52,5 @@ const port = process.env.PORT || 3000
 app.listen(port, () => {
   console.log(`Servidor: http://localhost:${port}`)
 })
+
+app.use('/', usuarioRouter);
