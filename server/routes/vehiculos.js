@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import Vehiculo from '../models/vehiculo.js';
+import { Vehiculo } from '../models/vehiculo.js';
 
 let router = Router();
 
