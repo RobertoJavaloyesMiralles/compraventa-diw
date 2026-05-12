@@ -1,26 +1,23 @@
 import { Router } from 'express';
-import { Vehiculo } from '../models/vehiculo.js';
+import { Vehiculo, Marca, Modelo } from '../models/vehiculo.js';
 
 let router = Router();
 
 /**
  * Obtiene todos los vehículos
  */
-router.get('/', (req, res) => {
-    Vehiculo.find()
-        .then(resultado => {
-            res.render('vehiculos', { vehiculos: resultado });
-        })
-        .catch(error => {
-            res.render('error', { error: "Error al obtener los vehículos" });
-        });
+router.get('/', async (req, res) => {
+    const marcas = await Marca.find();
+    const vehiculos = await Vehiculo.find().populate('marca').populate('modelo');
+    res.render('inicio.njk', { marcas, vehiculos });
 });
+
 
 /**
  * Formulario de alta
  */
 router.get('/nuevo', (req, res) => {
-    res.render('vehiculos_nuevo');
+    res.render('nuevo_coche');
 });
 
 /**
@@ -38,6 +35,54 @@ router.get('/editar/:id', (req, res) => {
         .catch(error => {
             res.render('error', { error: "Vehículo no encontrado" });
         });
+});
+
+// Resultados de búsqueda
+router.get('/catalogo', async (req, res) => {
+    const { texto, marca, combustible, tipo, orden } = req.query;
+
+    let filtro = {};
+
+    if (texto) {
+        filtro['$or'] = [];
+    }
+
+    if (marca) {
+        filtro.marca = marca;
+    }
+
+    if (combustible) {
+        filtro.combustible = combustible;
+    }
+
+    if (tipo) {
+        filtro.tipo = tipo;
+    }
+
+    let ordenacion = {};
+
+    if (orden === 'precio_asc') {
+        ordenacion.precio = 1;
+    }
+
+    if (orden === 'precio_desc') {
+        ordenacion.precio = -1;
+    }
+
+    if (orden === 'año_asc') {
+        ordenacion.año = 1;
+    }
+
+    if (orden === 'año_desc') {
+        ordenacion.año = -1;
+    }
+
+    const vehiculos = await Vehiculo.find(filtro)
+        .populate('marca').populate('modelo')
+        .sort(ordenacion);
+
+    const marcas = await Marca.find();
+    res.render('catalogo.njk', { vehiculos, marcas, query: req.query });
 });
 
 /**

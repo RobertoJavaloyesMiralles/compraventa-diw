@@ -9,7 +9,7 @@ import connectMongo from './config/mongoose.js'
 import indexRouter from './routes/vehiculos.js'
 import { viteAsset, viteCssFiles, isDev } from './utils/vite-assets.js'
 
-import usuarioRouter from './routes/usuarios.js';
+
 
 dotenv.config()
 
@@ -46,11 +46,9 @@ app.locals.isDev = isDev
 app.locals.viteAsset = viteAsset
 app.locals.viteCssFiles = viteCssFiles
 
-app.use('/compraventa', indexRouter)
+app.use('/', indexRouter)
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3001
 app.listen(port, () => {
   console.log(`Servidor: http://localhost:${port}`)
 })
-
-app.use('/', usuarioRouter);
