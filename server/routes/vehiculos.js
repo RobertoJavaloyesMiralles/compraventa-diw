@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { Vehiculo, Marca, Modelo } from '../models/vehiculo.js';
+import Comentario from '../models/comentario.js';
 
 let router = Router();
 
@@ -88,18 +89,47 @@ router.get('/catalogo', async (req, res) => {
 /**
  * Ficha de vehículo
  */
-router.get('/:id', (req, res) => {
-    Vehiculo.findById(req.params.id)
-        .then(resultado => {
-            if (resultado) {
-                res.render('vehiculos_ficha', { vehiculo: resultado });
-            } else {
-                res.render('error', { error: "Vehículo no encontrado" });
-            }
-        })
-        .catch(error => {
-            res.render('error', { error: "Error al obtener el vehículo" });
+router.get('/detalle/:id', async (req, res) => {
+    try {
+        const vehiculo = await Vehiculo.findById(req.params.id)
+            .populate('marca')
+            .populate('modelo');
+
+        if (!vehiculo) return res.render('error', { error: 'Vehículo no encontrado' });
+
+        const comentarios = await Comentario.find({ vehiculo: req.params.id })
+            .sort({ fecha: -1 })
+            .lean();
+
+        let valoracionMedia = null;
+        if (comentarios.length > 0) {
+            const total = comentarios.reduce((suma, c) => suma + c.valoracion, 0);
+            valoracionMedia = +(total / comentarios.length).toFixed(1);
+        }
+
+        // 3 vehículos aleatorios excluyendo el actual
+        const recomendaciones = await Vehiculo.aggregate([
+            { $match: { _id: { $ne: vehiculo._id } } },
+            { $sample: { size: 3 } }
+        ]);
+
+        // aggregate devuelve objetos planos, populate manual para marca y modelo
+        await Vehiculo.populate(recomendaciones, [
+            { path: 'marca' },
+            { path: 'modelo' }
+        ]);
+
+        res.render('detalle.njk', {
+            vehiculo,
+            comentarios,
+            valoracionMedia,
+            totalComentarios: comentarios.length,
+            recomendaciones
         });
+
+    } catch (err) {
+        res.render('error', { error: 'Error al cargar el vehículo: ' + err.message });
+    }
 });
 
 /**
