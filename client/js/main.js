@@ -1,1 +1,2 @@
-// vacio pero comentado para poder subirlo
+import '../scss/app.scss';
+import 'bootstrap';
