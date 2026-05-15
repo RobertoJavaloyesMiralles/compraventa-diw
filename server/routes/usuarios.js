@@ -1,0 +1,63 @@
+import { Router } from 'express';
+import Usuario from '../models/usuario.js';
+import bcrypt from 'bcrypt';
+
+let router = Router();
+
+/**
+ * Obtiene todos los usuarios
+ */
+router.get('/', async (req, res) => {
+    const usuarios = await Usuario.find();
+    // res.render('usuarios', { usuarios });
+    res.json(usuarios);
+});
+
+/**
+ * Formulario de alta de usuario
+ */
+router.get('/nuevo', async (req, res) => {
+    res.render('usuario_nuevo');
+});
+
+/**
+ * Obtiene un usuario por id
+ */
+router.get('/:id', async (req, res) => {
+    const usuario = await Usuario.findById(req.params.id);
+    res.json(usuario);
+});
+/**
+ * Crea un nuevo usuario.
+ */
+router.post('/registro', async (req, res) => {
+    const { nombre, email, password, rol } = req.body;
+
+    try {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const nuevoUsuario = new Usuario({ nombre, email, password: hashedPassword, rol });
+        await nuevoUsuario.save();
+        res.redirect('/');
+    } catch (error) {
+        res.render('registro', { error: "Error al crear el usuario" });
+    }
+});
+
+/**
+ * Inicio de sesión del usuario.
+ */
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const usuario = await Usuario.findOne({ email });
+        const isMatch = await bcrypt.compare(password, usuario.password);
+        if (!isMatch) {
+            return res.render('login', { error: "Contraseña incorrecta" });
+        }
+        res.redirect('/');
+    } catch (error) {
+        res.render('login', { error: "Error al iniciar sesión" });
+    }
+});
+export default router;

@@ -7,6 +7,7 @@ import methodOverride from 'method-override'
 
 import connectMongo from './config/mongoose.js'
 import indexRouter from './routes/vehiculos.js'
+import usuariosRouter from './routes/usuarios.js'
 import { viteAsset, viteCssFiles, isDev } from './utils/vite-assets.js'
 
 
@@ -46,6 +47,7 @@ app.locals.isDev = isDev
 app.locals.viteAsset = viteAsset
 app.locals.viteCssFiles = viteCssFiles
 
+app.use('/usuarios', usuariosRouter)
 app.use('/', indexRouter)
 
 const port = process.env.PORT || 3001
