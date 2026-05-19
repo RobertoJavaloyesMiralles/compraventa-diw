@@ -6,10 +6,9 @@ import dotenv from 'dotenv'
 import methodOverride from 'method-override'
 
 import connectMongo from './config/mongoose.js'
-
 import vehiculosRouter from './routes/vehiculos.js'
 import comentariosRouter from './routes/comentarios.js'
-import usuariosRouter from './routes/usuarios.js'
+//import usuariosRouter from './routes/usuarios.js'
 
 import { viteAsset, viteCssFiles, isDev } from './utils/vite-assets.js'
 
