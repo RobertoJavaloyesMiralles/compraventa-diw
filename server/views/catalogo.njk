@@ -60,7 +60,7 @@
                             <option value="">Por defecto</option>
                             <option value="precio_asc" {{ 'selected' if query.orden == 'precio_asc' }}>Precio: más bajo</option>
                             <option value="precio_desc" {{ 'selected' if query.orden == 'precio_desc' }}>Precio: más alto</option>
-                            <option value="año_desc" {{ 'selected' if query.orden == 'año_desc' }}>Más recientes</option>
+                            <option value="anio_desc" {{ 'selected' if query.orden == 'anio_desc' }}>Más recientes</option>
                         </select>
                     </div>
 
@@ -106,7 +106,7 @@
                                     </div>
                                 {% endif %}
                                 <div class="position-absolute top-0 end-0 m-3">
-                                    <span class="badge bg-white text-dark shadow-sm">{{ v.año }}</span>
+                                    <span class="badge bg-white text-dark shadow-sm">{{ v.anio }}</span>
                                 </div>
                             </div>
 

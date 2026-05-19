@@ -61,7 +61,7 @@ let vehiculoSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
-    año: {
+    anio: {
         type: Number,
         required: true,
         min: 1950

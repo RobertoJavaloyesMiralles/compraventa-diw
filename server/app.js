@@ -49,6 +49,7 @@ app.locals.isDev = isDev
 app.locals.viteAsset = viteAsset
 app.locals.viteCssFiles = viteCssFiles
 
+app.use('/usuarios', usuariosRouter)
 app.use('/', vehiculosRouter)
 app.use('/vehiculos', vehiculosRouter)
 app.use('/vehiculos/:id/comentarios', comentariosRouter)

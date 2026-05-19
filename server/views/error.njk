@@ -1,0 +1,23 @@
+{% extends "base.njk" %}
+
+{% block contenido %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="alert alert-danger shadow-sm border-0 py-5">
+                <i class="fas fa-exclamation-triangle fa-4x mb-4"></i>
+                <h2 class="fw-bold mb-3">¡Ups! Algo ha salido mal</h2>
+                <div class="lead mb-4">
+                    {{ error | safe if error else "Ha ocurrido un error inesperado en la aplicación." }}
+                </div>
+                <hr class="my-4 opacity-10">
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="/" class="btn btn-danger px-4">
+                        <i class="fas fa-home me-2"></i>Ir al inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
