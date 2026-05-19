@@ -1,7 +1,17 @@
 import mongoose from 'mongoose';
+/**
+ * Esquema de Vehículo con relación a Marca y Modelo.
+ */
 
-let vehiculoSchema = new mongoose.Schema({
-    matricula: {
+let marcaSchema = new mongoose.Schema({
+    marca: {
+        type: String,
+        required: true
+    }
+});
+
+let modeloSchema = new mongoose.Schema({
+    modelo: {
         type: String,
         required: true
     },
@@ -12,9 +22,6 @@ let vehiculoSchema = new mongoose.Schema({
     }
 });
 
-/**
- * Esquema de Vehículo con relación a Marca y Modelo.
- */
 let vehiculoSchema = new mongoose.Schema({
     matricula: {
         type: String,
