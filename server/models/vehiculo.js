@@ -1,23 +1,7 @@
 import mongoose from 'mongoose';
-/**
- * Modelo de Vehículo
- */
 
-/**
- * Esquema de Marca.
- */
-let marcaSchema = new mongoose.Schema({
-    marca: {
-        type: String,
-        required: true
-    }
-});
-
-/**
- * Esquema de Modelo.
- */
-let modeloSchema = new mongoose.Schema({
-    modelo: {
+let vehiculoSchema = new mongoose.Schema({
+    matricula: {
         type: String,
         required: true
     },
@@ -88,8 +72,8 @@ let vehiculoSchema = new mongoose.Schema({
     subtipo: {
         type: String,
         required: true,
-        enum: ["Deportivo", "SUV", "Compacto", "Sedán", "Trial", "Trail", "Moto-Cross", "Scooter", "Deportiva"]
-    },
+        enum: ["Deportivo", "SUV", "Compacto", "Sedán", "Trial", "Trail", "Moto-Cross", "Scooter", "Deportiva"]        
+    }
 });
 
 const Vehiculo = mongoose.model('vehiculo', vehiculoSchema);
