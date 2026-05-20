@@ -161,6 +161,8 @@ router.post('/', async (req, res) => {
         res.redirect('/');
         
     } catch (error) {
+        const marcas = await Marca.find();
+        const modelos = await Modelo.find();
         let errores = Object.keys(error.errors || {});
         let mensaje = "";
 
@@ -174,7 +176,7 @@ router.post('/', async (req, res) => {
             mensaje = 'Error añadiendo vehículo';
         }
 
-        res.render('error', { error: mensaje });
+        res.render('vehiculo_nuevo', { error: mensaje, marcas, modelos, vehiculo: req.body });
     }
 });
 
@@ -212,7 +214,27 @@ router.put('/:id', async (req, res) => {
         });
         res.redirect('/');
     } catch (error) {
-        res.render('error', { error: "Error modificando vehículo" });
+        let errores = Object.keys(error.errors || {});
+        let mensaje = "";
+
+        if (errores.length > 0) {
+            errores.forEach(clave => {
+                mensaje += '<p>' + error.errors[clave].message + '</p>';
+            });
+        } else if (error.code === 11000) {
+            mensaje = 'Ya existe un vehículo con esa matrícula';
+        } else {
+            mensaje = 'Error modificando vehículo';
+        }
+        
+        const marcas = await Marca.find();
+        const modelos = await Modelo.find();
+        res.render('vehiculos_editar', { 
+            error: mensaje, 
+            vehiculo: { ...req.body, _id: req.params.id }, 
+            marcas, 
+            modelos 
+        });
     }
 });
 

@@ -1,32 +1,40 @@
 import mongoose from 'mongoose';
 /**
- * Esquema de Vehículo con relación a Marca y Modelo.
+ * Modelo de Vehículo
  */
 
+/**
+ * Esquema de Marca.
+ */
 let marcaSchema = new mongoose.Schema({
     marca: {
         type: String,
-        required: true
+        required: [true, "La marca es obligatoria"],
+        trim: true
     }
 });
 
+/**
+ * Esquema de Modelo.
+ */
 let modeloSchema = new mongoose.Schema({
     modelo: {
         type: String,
-        required: true
+        required: [true, "El modelo es obligatorio"],
+        trim: true
     },
     marca: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "marca",
-        required: true
+        required: [true, "La marca es obligatoria"]
     }
 });
 
 let vehiculoSchema = new mongoose.Schema({
     matricula: {
         type: String,
-        required: true,
-        match: /^[0-9]{4}[A-Z]{3}$/,
+        required: [true, "La matrícula es obligatoria"],
+        match: [/^\d{4}[A-Z]{3}$/, "La matrícula debe tener el formato 1234ABC"],
         unique: true,
         trim: true,
         uppercase: true
@@ -34,53 +42,53 @@ let vehiculoSchema = new mongoose.Schema({
     marca: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "marca",
-        required: true
+        required: [true, "La marca es obligatoria"]
     },
     modelo: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "modelo",
-        required: true
+        required: [true, "El modelo es obligatorio"]
     },
     precio: {
         type: Number,
-        required: true,
+        required: [true, "El precio es obligatorio"],
         min: 0,
     },
     cv: {
         type: Number,
-        required: true,
+        required: [true, "Los cv son obligatorios"],
         min: 0
     },
     km: {
         type: Number,
-        required: true,
+        required: [true, "Los km son obligatorios"],
         min: 0
     },
     cilindrada: {
         type: Number,
-        required: true,
+        required: [true, "La cilindrada es obligatoria"],
         min: 0
     },
     anio: {
         type: Number,
-        required: true,
+        required: [true, "El año es obligatorio"],
         min: 1950
     },
     combustible: {
         type: String,
-        required: true,
+        required: [true, "El tipo de combustible es obligatorio"],
         enum: ["diesel", "gasolina", "electrico"]
     },
     tipo: {
         type: String,
-        required: true,
+        required: [true, "El tipo de vehículo es obligatorio"],
         enum: ["Coche", "Moto"]
     },
     subtipo: {
         type: String,
-        required: true,
-        enum: ["Deportivo", "SUV", "Compacto", "Sedán", "Trial", "Trail", "Moto-Cross", "Scooter", "Deportiva"]        
-    }
+        required: [true, "El subtipo es obligatorio"],
+        enum: ["Deportivo", "SUV", "Compacto", "Sedán", "Trial", "Trail", "Moto-Cross", "Scooter", "Deportiva"]
+    },
 });
 
 const Vehiculo = mongoose.model('vehiculo', vehiculoSchema);
