@@ -30,9 +30,6 @@ let modeloSchema = new mongoose.Schema({
     }
 });
 
-/**
- * Esquema de Vehículo con relación a Marca y Modelo.
- */
 let vehiculoSchema = new mongoose.Schema({
     matricula: {
         type: String,

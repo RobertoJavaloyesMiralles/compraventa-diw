@@ -1,0 +1,264 @@
+{% extends "base.njk" %}
+
+{% block contenido %}
+
+<div class="container my-5">
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="/catalogo" class="text-decoration-none">Catálogo</a></li>
+            <li class="breadcrumb-item active">{{ vehiculo.marca.marca }} {{ vehiculo.modelo.modelo }}</li>
+        </ol>
+    </nav>
+
+    {# Ficha del vehículo #}
+    <div class="card border-0 shadow-sm mb-5">
+        <div class="row g-0">
+
+            <div class="col-md-5">
+                {% if vehiculo.imagenes and vehiculo.imagenes.length > 0 %}
+                    <img
+                        src="{{ vehiculo.imagenes[0] }}"
+                        class="img-fluid rounded-start"
+                        alt="{{ vehiculo.marca.marca }} {{ vehiculo.modelo.modelo }}"
+                        style="height: 100%; object-fit: cover; min-height: 300px;"
+                    >
+                {% else %}
+                    <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center rounded-start" style="min-height: 300px; height: 100%;">
+                        <i class="fas fa-car fs-1 opacity-25"></i>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-7">
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h2 class="fw-bold text-primary mb-1">
+                                {{ vehiculo.marca.marca }} {{ vehiculo.modelo.modelo }}
+                            </h2>
+                            <span class="text-muted small">Matrícula: {{ vehiculo.matricula }}</span>
+                        </div>
+                        <span class="fs-3 fw-bold text-dark">{{ vehiculo.precio | int }} €</span>
+                    </div>
+
+                    {% if valoracionMedia %}
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div class="d-flex">
+                                {% for i in range(1, 6) %}
+                                    {% if i <= valoracionMedia %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-warning"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="fw-bold">{{ valoracionMedia }}</span>
+                            <span class="text-muted small">({{ totalComentarios }} valoraciones)</span>
+                        </div>
+                    {% endif %}
+
+                    <hr class="opacity-10">
+
+                    <div class="row g-3">
+                        <div class="col-6 col-md-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-calendar-alt text-primary"></i>
+                                <div>
+                                    <div class="small text-muted">Año</div>
+                                    <div class="fw-bold">{{ vehiculo.año }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-road text-primary"></i>
+                                <div>
+                                    <div class="small text-muted">Kilómetros</div>
+                                    <div class="fw-bold">{{ vehiculo.km | int }} km</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-gas-pump text-primary"></i>
+                                <div>
+                                    <div class="small text-muted">Combustible</div>
+                                    <div class="fw-bold">{{ vehiculo.combustible }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-bolt text-primary"></i>
+                                <div>
+                                    <div class="small text-muted">Potencia</div>
+                                    <div class="fw-bold">{{ vehiculo.cv }} CV</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-tachometer-alt text-primary"></i>
+                                <div>
+                                    <div class="small text-muted">Cilindrada</div>
+                                    <div class="fw-bold">{{ vehiculo.cilindrada }} cc</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-car text-primary"></i>
+                                <div>
+                                    <div class="small text-muted">Tipo</div>
+                                    <div class="fw-bold">{{ vehiculo.subtipo }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <span class="badge bg-primary px-3 py-2">{{ vehiculo.tipo }}</span>
+                        <span class="badge bg-light text-dark px-3 py-2">{{ vehiculo.combustible }}</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Comentarios y formulario #}
+    <div class="row g-5">
+
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-4">
+                <i class="fas fa-comments me-2 text-primary"></i>
+                Comentarios
+                {% if totalComentarios > 0 %}
+                    <span class="badge bg-primary ms-2">{{ totalComentarios }}</span>
+                {% endif %}
+            </h4>
+
+            {% if comentarios.length == 0 %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-comment-slash fs-1 opacity-25 mb-3 d-block"></i>
+                    <p>Aún no hay comentarios. ¡Sé el primero!</p>
+                </div>
+            {% else %}
+                {% for c in comentarios %}
+                <div class="card border-0 shadow-sm mb-3 animate-fade-in">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:38px; height:38px;">
+                                    {{ c.nick[0] | upper }}
+                                </div>
+                                <div>
+                                    <span class="fw-bold">{{ c.nick }}</span>
+                                    <div class="small text-muted">{{ c.fechaFormateada }}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                {% for i in range(1, 6) %}
+                                    {% if i <= c.valoracion %}
+                                        <i class="fas fa-star text-warning small"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-warning small"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">{{ c.texto }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm bg-accent sticky-top" style="top: 100px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">
+                        <i class="fas fa-pen me-2 text-primary"></i> Deja tu opinión
+                    </h5>
+
+                    <form action="/vehiculos/{{ vehiculo._id }}/comentarios" method="POST">
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase opacity-50">Nick</label>
+                            <input type="text" name="nick" class="form-control" placeholder="Tu nombre o alias" maxlength="50" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase opacity-50">Comentario</label>
+                            <textarea name="texto" class="form-control" rows="4" placeholder="¿Qué te parece este vehículo?" maxlength="1000" required></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase opacity-50">Valoración</label>
+                            <select name="valoracion" class="form-select" required>
+                                <option value="">Elige una valoración</option>
+                                <option value="5">★★★★★ Excelente</option>
+                                <option value="4">★★★★☆ Muy bueno</option>
+                                <option value="3">★★★☆☆ Normal</option>
+                                <option value="2">★★☆☆☆ Mejorable</option>
+                                <option value="1">★☆☆☆☆ Malo</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-paper-plane me-2"></i> Publicar comentario
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {# Recomendaciones #}
+    {% if recomendaciones.length > 0 %}
+    <div class="mt-5">
+        <h4 class="fw-bold mb-4">
+            <i class="fas fa-thumbs-up me-2 text-primary"></i> También te puede interesar
+        </h4>
+        <div class="row g-4">
+            {% for r in recomendaciones %}
+            <div class="col-md-4 animate-fade-in">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="position-relative">
+                        {% if r.imagenes and r.imagenes.length > 0 %}
+                            <img src="{{ r.imagenes[0] }}" class="card-img-top" alt="{{ r.marca.marca }} {{ r.modelo.modelo }}" style="height: 180px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 180px;">
+                                <i class="fas fa-car fs-1 opacity-10"></i>
+                            </div>
+                        {% endif %}
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-white text-dark shadow-sm">{{ r.año }}</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="fw-bold text-primary mb-1">{{ r.marca.marca }} {{ r.modelo.modelo }}</h6>
+                        <div class="d-flex gap-2 mb-3">
+                            <span class="small text-muted"><i class="fas fa-road me-1"></i>{{ r.km | int }} km</span>
+                            <span class="small text-muted"><i class="fas fa-gas-pump me-1"></i>{{ r.combustible }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">{{ r.precio | int }} €</span>
+                            <a href="/detalle/{{ r._id }}" class="btn btn-outline-dark btn-sm rounded-pill px-3">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

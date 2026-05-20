@@ -107,6 +107,11 @@ router.get('/detalle/:id', async (req, res) => {
             const total = comentarios.reduce((suma, c) => suma + c.valoracion, 0);
             valoracionMedia = +(total / comentarios.length).toFixed(1);
         }
+        // Formatear fecha de comentarios
+        comentarios.forEach(c => {
+            const d = new Date(c.fecha);
+            c.fechaFormateada = d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        });
 
         // 3 vehículos aleatorios excluyendo el actual
         const recomendaciones = await Vehiculo.aggregate([
