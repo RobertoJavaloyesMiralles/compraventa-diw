@@ -6,8 +6,11 @@ import dotenv from 'dotenv'
 import methodOverride from 'method-override'
 
 import connectMongo from './config/mongoose.js'
-import indexRouter from './routes/vehiculos.js'
+
+import vehiculosRouter from './routes/vehiculos.js'
+import comentariosRouter from './routes/comentarios.js'
 import usuariosRouter from './routes/usuarios.js'
+
 import { viteAsset, viteCssFiles, isDev } from './utils/vite-assets.js'
 
 
@@ -48,7 +51,9 @@ app.locals.viteAsset = viteAsset
 app.locals.viteCssFiles = viteCssFiles
 
 app.use('/usuarios', usuariosRouter)
-app.use('/', indexRouter)
+app.use('/', vehiculosRouter)
+app.use('/vehiculos', vehiculosRouter)
+app.use('/vehiculos/:id/comentarios', comentariosRouter)
 
 const port = process.env.PORT || 3001
 app.listen(port, () => {
