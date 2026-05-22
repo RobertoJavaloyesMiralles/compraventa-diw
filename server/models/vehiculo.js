@@ -52,27 +52,27 @@ let vehiculoSchema = new mongoose.Schema({
     precio: {
         type: Number,
         required: [true, "El precio es obligatorio"],
-        min: 0,
+        min: [0, "El precio no puede ser negativo"],
     },
     cv: {
         type: Number,
         required: [true, "Los cv son obligatorios"],
-        min: 0
+        min: [0, "Los caballos de potencia no pueden ser negativos"]
     },
     km: {
         type: Number,
         required: [true, "Los km son obligatorios"],
-        min: 0
+        min: [0, "Los kilómetros no pueden ser negativos"]
     },
     cilindrada: {
         type: Number,
         required: [true, "La cilindrada es obligatoria"],
-        min: 0
+        min: [0, "La cilindrada no puede ser negativa"]
     },
     anio: {
         type: Number,
         required: [true, "El año es obligatorio"],
-        min: 1950
+        min: [1950, "El año de fabricación no puede ser anterior a 1950"]
     },
     combustible: {
         type: String,

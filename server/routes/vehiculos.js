@@ -28,9 +28,11 @@ router.get('/nuevo', async (req, res) => {
  */
 router.get('/editar/:id', async (req, res) => {
     try {
-        const resultado = await Vehiculo.findById(req.params.id);
+        const resultado = await Vehiculo.findById(req.params.id).populate('marca').populate('modelo');
+        const marcas = await Marca.find();
+        const modelos = await Modelo.find();
         if (resultado) {
-            res.render('vehiculos_editar', { vehiculo: resultado });
+            res.render('vehiculo_editar', { vehiculo: resultado, marcas, modelos });
         } else {
             res.render('error', { error: "Vehículo no encontrado" });
         }
@@ -125,7 +127,7 @@ router.get('/detalle/:id', async (req, res) => {
             { path: 'modelo' }
         ]);
 
-        res.render('detalle.njk', {
+        res.render('detalle', {
             vehiculo,
             comentarios,
             valoracionMedia,
@@ -158,8 +160,7 @@ router.post('/', async (req, res) => {
         });
 
         await nuevoVehiculo.save();
-        res.redirect('/');
-        
+        res.redirect('/detalle/' + nuevoVehiculo._id);
     } catch (error) {
         const marcas = await Marca.find();
         const modelos = await Modelo.find();
@@ -211,8 +212,8 @@ router.put('/:id', async (req, res) => {
                 tipo: req.body.tipo,
                 subtipo: req.body.subtipo
             }
-        });
-        res.redirect('/');
+        }, { runValidators: true }); // Para aplicar las validaciones
+        res.redirect('/detalle/' + req.params.id);
     } catch (error) {
         let errores = Object.keys(error.errors || {});
         let mensaje = "";
@@ -229,7 +230,7 @@ router.put('/:id', async (req, res) => {
         
         const marcas = await Marca.find();
         const modelos = await Modelo.find();
-        res.render('vehiculos_editar', { 
+        res.render('vehiculo_editar', { 
             error: mensaje, 
             vehiculo: { ...req.body, _id: req.params.id }, 
             marcas, 
