@@ -1,0 +1,128 @@
+{% extends "base.njk" %}
+
+{% block title %}Editar Vehículo - Compraventa DIW{% endblock %}
+
+{% block contenido %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Editar Vehículo</h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Muestra los errores del formulario -->
+                    {% include "alerta_error.njk" %}
+                    
+                    <form action="/vehiculos/{{ vehiculo._id }}" method="POST">
+                        <input type="hidden" name="_method" value="PUT">
+                        
+                        <div class="row g-3">
+                            <!-- Matrícula -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Matrícula</label>
+                                <input type="text" name="matricula" class="form-control" placeholder="1234ABC" value="{{ vehiculo.matricula }}" required pattern="\d{4}[A-Z]{3}" title="Debe incluir 4 números y 3 letras mayúsculas">
+                                <div class="form-text small">Formato: 1234ABC</div>
+                            </div>
+                            
+                            <!-- Marca -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Marca</label>
+                                <select name="marca" class="form-select" required>
+                                    <option value="" disabled>Selecciona marca...</option>
+                                    {% for m in marcas %}
+                                        <option value="{{ m._id }}" {% if vehiculo.marca and (vehiculo.marca == m._id|string or (vehiculo.marca._id and vehiculo.marca._id|string == m._id|string)) %}selected{% endif %}>{{ m.marca }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Modelo -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Modelo</label>
+                                <select name="modelo" class="form-select" required>
+                                    <option value="" disabled>Selecciona modelo...</option>
+                                    {% for mod in modelos %}
+                                        <option value="{{ mod._id }}" {% if vehiculo.modelo and (vehiculo.modelo == mod._id|string or (vehiculo.modelo._id and vehiculo.modelo._id|string == mod._id|string)) %}selected{% endif %}>{{ mod.modelo }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Precio y Año -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Precio (€)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-euro-sign"></i></span>
+                                    <input type="number" name="precio" class="form-control" value="{{ vehiculo.precio }}" required min="0" step="0.01">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Año de Fabricación</label>
+                                <input type="number" name="anio" class="form-control" value="{{ vehiculo.anio }}" required min="1950">
+                            </div>
+
+                            <!-- Motor y Kilómetros -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Potencia (CV)</label>
+                                <input type="number" name="cv" class="form-control" value="{{ vehiculo.cv }}" required min="0">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Kilómetros</label>
+                                <input type="number" name="km" class="form-control" value="{{ vehiculo.km }}" required min="0">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Cilindrada (cc)</label>
+                                <input type="number" name="cilindrada" class="form-control" value="{{ vehiculo.cilindrada }}" required min="0">
+                            </div>
+
+                            <!-- Desplegables de Tipo -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Combustible</label>
+                                <select name="combustible" class="form-select" required>
+                                    <option value="gasolina" {% if vehiculo.combustible == 'gasolina' %}selected{% endif %}>Gasolina</option>
+                                    <option value="diesel" {% if vehiculo.combustible == 'diesel' %}selected{% endif %}>Diésel</option>
+                                    <option value="electrico" {% if vehiculo.combustible == 'electrico' %}selected{% endif %}>Eléctrico</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Tipo</label>
+                                <select name="tipo" class="form-select" required>
+                                    <option value="Coche" {% if vehiculo.tipo == 'Coche' %}selected{% endif %}>Coche</option>
+                                    <option value="Moto" {% if vehiculo.tipo == 'Moto' %}selected{% endif %}>Moto</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Subtipo</label>
+                                <select name="subtipo" class="form-select" required>
+                                    <option value="" disabled>Selecciona subtipo...</option>
+                                    <option value="Deportivo" {% if vehiculo.subtipo == 'Deportivo' %}selected{% endif %}>Deportivo</option>
+                                    <option value="SUV" {% if vehiculo.subtipo == 'SUV' %}selected{% endif %}>SUV</option>
+                                    <option value="Compacto" {% if vehiculo.subtipo == 'Compacto' %}selected{% endif %}>Compacto</option>
+                                    <option value="Sedán" {% if vehiculo.subtipo == 'Sedán' %}selected{% endif %}>Sedán</option>
+                                    <option value="Scooter" {% if vehiculo.subtipo == 'Scooter' %}selected{% endif %}>Scooter</option>
+                                    <option value="Deportiva" {% if vehiculo.subtipo == 'Deportiva' %}selected{% endif %}>Deportiva</option>
+                                    <option value="Trial" {% if vehiculo.subtipo == 'Trial' %}selected{% endif %}>Trial</option>
+                                    <option value="Trail" {% if vehiculo.subtipo == 'Trail' %}selected{% endif %}>Trail</option>
+                                    <option value="Moto-Cross" {% if vehiculo.subtipo == 'Moto-Cross' %}selected{% endif %}>Moto-Cross</option>
+                                </select>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="col-12 mt-4 pt-3 border-top">
+                                <button type="submit" class="btn btn-warning px-5 py-2 shadow-sm fw-bold">
+                                    <i class="fas fa-save me-2"></i>Guardar Cambios
+                                </button>
+                                <a href="/detalle/{{ vehiculo._id }}" class="btn btn-outline-secondary px-4 py-2 ms-2">Cancelar</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

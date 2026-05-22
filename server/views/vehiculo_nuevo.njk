@@ -17,14 +17,14 @@
                             <!-- Matrícula -->
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Matrícula</label>
-                                <input type="text" name="matricula" class="form-control" placeholder="1234ABC" value="{{ vehiculo.matricula if vehiculo else '' }}">
+                                <input type="text" name="matricula" class="form-control" placeholder="1234ABC" value="{{ vehiculo.matricula if vehiculo else '' }}" required pattern="\d{4}[A-Z]{3}" title="Debe incluir 4 números y 3 letras mayúsculas">
                                 <div class="form-text small">Formato: 1234ABC</div>
                             </div>
                             
                             <!-- Marca -->
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Marca</label>
-                                <select name="marca" class="form-select">
+                                <select name="marca" class="form-select" required>
                                     <option value="" {% if not vehiculo %}selected{% endif %} disabled>Selecciona marca...</option>
                                     {% for m in marcas %}
                                         <option value="{{ m._id }}" {% if vehiculo and vehiculo.marca == m._id|string %}selected{% endif %}>{{ m.marca }}</option>
@@ -34,7 +34,7 @@
 
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Modelo</label>
-                                <select name="modelo" class="form-select">
+                                <select name="modelo" class="form-select" required>
                                     <option value="" {% if not vehiculo %}selected{% endif %} disabled>Selecciona modelo...</option>
                                     {% for mod in modelos %}
                                         <option value="{{ mod._id }}" {% if vehiculo and vehiculo.modelo == mod._id|string %}selected{% endif %}>{{ mod.modelo }}</option>
@@ -47,35 +47,35 @@
                                 <label class="form-label fw-bold">Precio (€)</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-euro-sign"></i></span>
-                                    <input type="number" name="precio" class="form-control" value="{{ vehiculo.precio if vehiculo else '' }}">
+                                    <input type="number" name="precio" class="form-control" value="{{ vehiculo.precio if vehiculo else '' }}" required min="0" step="0.01">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Año de Fabricación</label>
-                                <input type="number" name="anio" class="form-control" value="{{ vehiculo.anio if vehiculo else '' }}">
+                                <input type="number" name="anio" class="form-control" value="{{ vehiculo.anio if vehiculo else '' }}" required min="1950">
                             </div>
 
                             <!-- Motor y Kilómetros -->
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Potencia (CV)</label>
-                                <input type="number" name="cv" class="form-control" value="{{ vehiculo.cv if vehiculo else '' }}">
+                                <input type="number" name="cv" class="form-control" value="{{ vehiculo.cv if vehiculo else '' }}" required min="0">
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Kilómetros</label>
-                                <input type="number" name="km" class="form-control" value="{{ vehiculo.km if vehiculo else '' }}">
+                                <input type="number" name="km" class="form-control" value="{{ vehiculo.km if vehiculo else '' }}" required min="0">
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Cilindrada (cc)</label>
-                                <input type="number" name="cilindrada" class="form-control" value="{{ vehiculo.cilindrada if vehiculo else '' }}">
+                                <input type="number" name="cilindrada" class="form-control" value="{{ vehiculo.cilindrada if vehiculo else '' }}" required min="0">
                             </div>
 
                             <!-- Desplegables de Tipo -->
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Combustible</label>
-                                <select name="combustible" class="form-select">
+                                <select name="combustible" class="form-select" required>
                                     <option value="gasolina" {% if vehiculo and vehiculo.combustible == 'gasolina' %}selected{% endif %}>Gasolina</option>
                                     <option value="diesel" {% if vehiculo and vehiculo.combustible == 'diesel' %}selected{% endif %}>Diésel</option>
                                     <option value="electrico" {% if vehiculo and vehiculo.combustible == 'electrico' %}selected{% endif %}>Eléctrico</option>
@@ -84,7 +84,7 @@
 
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Tipo</label>
-                                <select name="tipo" class="form-select">
+                                <select name="tipo" class="form-select" required>
                                     <option value="Coche" {% if vehiculo and vehiculo.tipo == 'Coche' %}selected{% endif %}>Coche</option>
                                     <option value="Moto" {% if vehiculo and vehiculo.tipo == 'Moto' %}selected{% endif %}>Moto</option>
                                 </select>
@@ -92,7 +92,7 @@
 
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Subtipo</label>
-                                <select name="subtipo" class="form-select">
+                                <select name="subtipo" class="form-select" required>
                                     <option value="" {% if not vehiculo %}selected{% endif %} disabled>Selecciona subtipo...</option>
                                     <option value="Deportivo" {% if vehiculo and vehiculo.subtipo == 'Deportivo' %}selected{% endif %}>Deportivo</option>
                                     <option value="SUV" {% if vehiculo and vehiculo.subtipo == 'SUV' %}selected{% endif %}>SUV</option>
