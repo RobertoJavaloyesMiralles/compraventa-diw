@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { Vehiculo, Marca, Modelo } from '../models/vehiculo.js';
 import Comentario from '../models/comentario.js';
-
+import { autenticacion, rol } from './usuarios.js';
 let router = Router();
 
 /**
@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 /**
  * Formulario de alta
  */
-router.get('/nuevo', async (req, res) => {
+router.get('/nuevo', autenticacion, async (req, res) => {
     const marcas = await Marca.find();
     const modelos = await Modelo.find();
     res.render('vehiculo_nuevo', { marcas, modelos });
@@ -132,8 +132,7 @@ router.get('/detalle/:id', async (req, res) => {
             comentarios,
             valoracionMedia,
             totalComentarios: comentarios.length,
-            recomendaciones,
-            usuarioSession: req.session.usuario || null
+            recomendaciones
         });
 
     } catch (err) {
@@ -144,7 +143,7 @@ router.get('/detalle/:id', async (req, res) => {
 /**
  * Crea un vehículo
  */
-router.post('/', async (req, res) => {
+router.post('/', autenticacion, async (req, res) => {
     try {
         let nuevoVehiculo = new Vehiculo({
             matricula: req.body.matricula,

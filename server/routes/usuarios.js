@@ -16,17 +16,17 @@ router.get('/', async (req, res) => {
 /**
  * Formulario de alta de usuario
  */
-router.get('/nuevo', async (req, res) => {
-    res.render('usuario_nuevo');
+router.get('/registro', async (req, res) => {
+    res.render('registro');
 });
 
 /**
- * Obtiene un usuario por id
+ * Formulario de login
  */
-router.get('/:id', async (req, res) => {
-    const usuario = await Usuario.findById(req.params.id);
-    res.json(usuario);
+router.get('/login', async(req, res) => {
+    res.render('login');
 });
+
 /**
  * Crea un nuevo usuario.
  */
@@ -53,7 +53,7 @@ router.post('/registro', async (req, res) => {
             mensaje = 'Error añadiendo usuario';
         }
 
-        res.render('usuario_nuevo', { error: mensaje, datos: req.body });
+        res.render('registro', { error: mensaje, datos: req.body });
     }
 });
 
@@ -117,9 +117,12 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const usuario = await Usuario.findOne({ email });
+        if (!usuario) {
+            return res.render('login', { error: "Usuario o contraseña incorrectos" });
+        }
         const isMatch = await bcrypt.compare(password, usuario.password);
         if (!isMatch) {
-            return res.render('login', { error: "Contraseña incorrecta" });
+            return res.render('login', { error: "Usuario o contraseña incorrectos" });
         }
         // Ivan: Guardamos la session para identificar al usuario para el apartado de los comentarios y valoraciones
         req.session.usuario = {
@@ -133,4 +136,52 @@ router.post('/login', async (req, res) => {
         res.render('login', { error: "Error al iniciar sesión" });
     }
 });
+
+/**
+ * Función para controlar que el usuario está logueado
+ */
+export const autenticacion = (req, res, next) => {
+    if (req.session && req.session.usuario)
+        return next();
+    else
+        res.redirect('/usuarios/login');
+};
+
+/**
+ * Función para controlar que el usuario tiene un rol determinado
+ */
+export const rol = (rol) => {
+    return (req, res, next) => {
+        if (req.session.usuario && rol === req.session.usuario.rol)
+            next();
+        else
+            res.redirect('/usuarios/login');
+    }
+};
+
+
+/**
+ * Cierra la sesión del usuario.
+ */
+router.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/');
+});
+
+/**
+ * Obtiene un usuario por id
+ */
+router.get('/:id', async (req, res) => {
+    try {
+        const usuario = await Usuario.findById(req.params.id);
+        if (usuario) {
+            res.json(usuario);
+        } else {
+            res.status(404).json({ error: "Usuario no encontrado" });
+        }
+    } catch (err) {
+        res.status(400).json({ error: "ID inválido" });
+    }
+});
+
 export default router;
