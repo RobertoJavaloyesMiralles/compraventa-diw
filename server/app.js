@@ -13,9 +13,8 @@ import session from 'express-session';
 
 import { viteAsset, viteCssFiles, isDev } from './utils/vite-assets.js'
 
-
-
 dotenv.config()
+
 
 const app = express()
 const __filename = fileURLToPath(import.meta.url)
@@ -29,7 +28,8 @@ app.use(express.json())
 app.use(session({
   secret: 'compraventa-secret',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  expires: new Date(Date.now() + (30 * 60 * 1000))
 }))
 
 app.use('/build', express.static(path.resolve(process.cwd(), 'public/build')))
@@ -55,6 +55,12 @@ app.set('views', path.join(__dirname, 'views'))
 app.locals.isDev = isDev
 app.locals.viteAsset = viteAsset
 app.locals.viteCssFiles = viteCssFiles
+
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  res.locals.usuarioSesion = req.session ? req.session.usuario : null;
+  next();
+});
 
 app.use('/usuarios', usuariosRouter)
 app.use('/', vehiculosRouter)
