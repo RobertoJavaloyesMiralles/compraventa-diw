@@ -9,6 +9,7 @@ import connectMongo from './config/mongoose.js'
 import vehiculosRouter from './routes/vehiculos.js'
 import comentariosRouter from './routes/comentarios.js'
 import usuariosRouter from './routes/usuarios.js'
+import session from 'express-session';
 
 import { viteAsset, viteCssFiles, isDev } from './utils/vite-assets.js'
 
@@ -25,6 +26,12 @@ connectMongo()
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
+app.use(session({
+  secret: 'compraventa-secret',
+  resave: false,
+  saveUninitialized: false
+}))
+
 app.use('/build', express.static(path.resolve(process.cwd(), 'public/build')))
 app.use(express.static(path.resolve(process.cwd(), 'public')))
 
@@ -35,11 +42,11 @@ nunjucks.configure(path.join(__dirname, 'views'), {
 })
 
 app.use(methodOverride(function (req, res) {
-    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
-      let method = req.body._method;
-      delete req.body._method;
-      return method;
-    } 
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    let method = req.body._method;
+    delete req.body._method;
+    return method;
+  }
 }));
 
 app.set('view engine', 'njk')

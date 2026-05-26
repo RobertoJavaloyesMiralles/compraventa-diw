@@ -183,12 +183,23 @@
                     <h5 class="fw-bold mb-4">
                         <i class="fas fa-pen me-2 text-primary"></i> Deja tu opinión
                     </h5>
-
                     <form action="/vehiculos/{{ vehiculo._id }}/comentarios" method="POST">
 
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-uppercase opacity-50">Nick</label>
-                            <input type="text" name="nick" class="form-control" placeholder="Tu nombre o alias" maxlength="50" required>
+                            {% if usuarioSesion %}
+                                {# Usuario logueado: nick fijo, no editable #}
+                                <input type="hidden" name="nick" value="{{ usuarioSesion.nombre }}">
+                                <div class="form-control bg-light text-muted">
+                                    <i class="fas fa-user me-2 text-primary"></i>{{ usuarioSesion.nombre }}
+                                </div>
+                            {% else %}
+                                {# Sin sesión: campo libre para comentar como anónimo #}
+                                <input type="text" name="nick" class="form-control" placeholder="Tu nombre o alias" maxlength="50" required>
+                                <div class="form-text">
+                                    <a href="/usuarios/login" class="text-primary">Inicia sesión</a> para comentar con tu cuenta.
+                                </div>
+                            {% endif %}
                         </div>
 
                         <div class="mb-3">

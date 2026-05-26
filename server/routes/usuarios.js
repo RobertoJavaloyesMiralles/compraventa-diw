@@ -32,7 +32,7 @@ router.get('/:id', async (req, res) => {
  */
 router.post('/registro', async (req, res) => {
     const { nombre, email, password, rol } = req.body;
-    
+
     try {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -79,7 +79,7 @@ router.get('/editar/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { nombre, email, password, rol } = req.body;
-        
+
         let updateData = { nombre, email, rol };
         if (password && password.trim() !== '') {
             const saltRounds = 10;
@@ -103,8 +103,8 @@ router.put('/:id', async (req, res) => {
             mensaje = 'Error modificando usuario';
         }
 
-        res.render('usuario_editar', { 
-            error: mensaje, 
+        res.render('usuario_editar', {
+            error: mensaje,
             usuario: { ...req.body, _id: req.params.id } //n sirve para no perder los datos al recargar
         });
     }
@@ -121,6 +121,13 @@ router.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.render('login', { error: "Contraseña incorrecta" });
         }
+        // Ivan: Guardamos la session para identificar al usuario para el apartado de los comentarios y valoraciones
+        req.session.usuario = {
+            _id: usuario._id,
+            nombre: usuario.nombre,
+            email: usuario.email,
+            rol: usuario.rol
+        };
         res.redirect('/');
     } catch (error) {
         res.render('login', { error: "Error al iniciar sesión" });

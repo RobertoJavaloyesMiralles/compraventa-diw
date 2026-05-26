@@ -132,7 +132,8 @@ router.get('/detalle/:id', async (req, res) => {
             comentarios,
             valoracionMedia,
             totalComentarios: comentarios.length,
-            recomendaciones
+            recomendaciones,
+            usuarioSession: req.session.usuario || null
         });
 
     } catch (err) {
@@ -227,14 +228,14 @@ router.put('/:id', async (req, res) => {
         } else {
             mensaje = 'Error modificando vehículo';
         }
-        
+
         const marcas = await Marca.find();
         const modelos = await Modelo.find();
-        res.render('vehiculo_editar', { 
-            error: mensaje, 
-            vehiculo: { ...req.body, _id: req.params.id }, 
-            marcas, 
-            modelos 
+        res.render('vehiculo_editar', {
+            error: mensaje,
+            vehiculo: { ...req.body, _id: req.params.id },
+            marcas,
+            modelos
         });
     }
 });
