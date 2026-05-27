@@ -1,13 +1,36 @@
 import { Router } from 'express';
 import Usuario from '../models/usuario.js';
 import bcrypt from 'bcrypt';
+import { Vehiculo, Marca } from '../models/vehiculo.js';
 
 let router = Router();
 
 /**
+ * Función para controlar que el usuario está logueado
+ */
+export const autenticacion = (req, res, next) => {
+    if (req.session && req.session.usuario)
+        return next();
+    else
+        res.redirect('/usuarios/login');
+};
+
+/**
+ * Función para controlar que el usuario tiene un rol determinado
+ */
+export const rol = (rol) => {
+    return (req, res, next) => {
+        if (req.session.usuario && rol === req.session.usuario.rol)
+            next();
+        else
+            res.redirect('/usuarios/login');
+    }
+};
+
+/**
  * Obtiene todos los usuarios
  */
-router.get('/', async (req, res) => {
+router.get('/', rol('admin'), async (req, res) => {
     const usuarios = await Usuario.find();
     // res.render('usuarios', { usuarios });
     res.json(usuarios);
@@ -60,7 +83,7 @@ router.post('/registro', async (req, res) => {
 /**
  * Formulario de edición de un usuario
  */
-router.get('/editar/:id', async (req, res) => {
+router.get('/editar/:id', rol('admin'), async (req, res) => {
     try {
         const resultado = await Usuario.findById(req.params.id);
         if (resultado) {
@@ -76,7 +99,7 @@ router.get('/editar/:id', async (req, res) => {
 /**
  * Actualiza un usuario.
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', rol('admin'), async (req, res) => {
     try {
         const { nombre, email, password, rol } = req.body;
 
@@ -138,29 +161,6 @@ router.post('/login', async (req, res) => {
 });
 
 /**
- * Función para controlar que el usuario está logueado
- */
-export const autenticacion = (req, res, next) => {
-    if (req.session && req.session.usuario)
-        return next();
-    else
-        res.redirect('/usuarios/login');
-};
-
-/**
- * Función para controlar que el usuario tiene un rol determinado
- */
-export const rol = (rol) => {
-    return (req, res, next) => {
-        if (req.session.usuario && rol === req.session.usuario.rol)
-            next();
-        else
-            res.redirect('/usuarios/login');
-    }
-};
-
-
-/**
  * Cierra la sesión del usuario.
  */
 router.get('/logout', (req, res) => {
@@ -169,9 +169,33 @@ router.get('/logout', (req, res) => {
 });
 
 /**
+ * Ruta de administración
+ */
+router.get('/administracion', rol('admin'), async (req,res) => {
+    const usuarios = await Usuario.find();
+    const marcas = await Marca.find();
+    const vehiculos = await Vehiculo.find().populate('marca').populate('modelo');
+
+    res.render('administracion', { usuarios, vehiculos, marcas });
+});
+
+/**
+ * Elimina un usuario por ID.
+ */
+router.delete('/:id', rol('admin'), async (req, res) => {
+    try {
+        await Usuario.findByIdAndDelete(req.params.id);
+        
+        res.redirect('/usuarios/administracion');
+    } catch (error) {
+        res.render('error', { error: "Error borrando usuario" });
+    }
+});
+
+/**
  * Obtiene un usuario por id
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', rol('admin'), async (req, res) => {
     try {
         const usuario = await Usuario.findById(req.params.id);
         if (usuario) {

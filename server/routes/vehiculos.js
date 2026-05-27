@@ -26,13 +26,17 @@ router.get('/nuevo', autenticacion, async (req, res) => {
 /**
  * Formulario de edición de un vehículo
  */
-router.get('/editar/:id', async (req, res) => {
+router.get('/editar/:id', autenticacion, async (req, res) => {
     try {
         const resultado = await Vehiculo.findById(req.params.id).populate('marca').populate('modelo');
         const marcas = await Marca.find();
         const modelos = await Modelo.find();
         if (resultado) {
-            res.render('vehiculo_editar', { vehiculo: resultado, marcas, modelos });
+            if (req.session.usuario.rol === 'admin' || (resultado.usuario && resultado.usuario.toString() === req.session.usuario._id.toString())) {
+                res.render('vehiculo_editar', { vehiculo: resultado, marcas, modelos });
+            } else {
+                res.render('error', { error: "No tienes permiso para editar este vehículo" });
+            }
         } else {
             res.render('error', { error: "Vehículo no encontrado" });
         }
@@ -156,7 +160,8 @@ router.post('/', autenticacion, async (req, res) => {
             anio: req.body.anio,
             combustible: req.body.combustible,
             tipo: req.body.tipo,
-            subtipo: req.body.subtipo
+            subtipo: req.body.subtipo,
+            usuario: req.session.usuario._id
         });
 
         await nuevoVehiculo.save();
@@ -184,10 +189,18 @@ router.post('/', autenticacion, async (req, res) => {
 /**
  * Borra un vehículo
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', autenticacion, async (req, res) => {
     try {
-        await Vehiculo.findByIdAndDelete(req.params.id);
-        res.redirect('/');
+        const vehiculo = await Vehiculo.findById(req.params.id);
+        if (!vehiculo) {
+            return res.render('error', { error: "Vehículo no encontrado" });
+        }
+        if (req.session.usuario.rol === 'admin' || (vehiculo.usuario && vehiculo.usuario.toString() === req.session.usuario._id.toString())) {
+            await Vehiculo.findByIdAndDelete(req.params.id);
+            res.redirect('/');
+        } else {
+            res.render('error', { error: "No tienes permiso para borrar este vehículo" });
+        }
     } catch (error) {
         res.render('error', { error: "Error borrando vehículo" });
     }
@@ -196,24 +209,32 @@ router.delete('/:id', async (req, res) => {
 /**
  * Edita un vehículo
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', autenticacion, async (req, res) => {
     try {
-        await Vehiculo.findByIdAndUpdate(req.params.id, {
-            $set: {
-                matricula: req.body.matricula,
-                marca: req.body.marca,
-                modelo: req.body.modelo,
-                precio: req.body.precio,
-                cv: req.body.cv,
-                km: req.body.km,
-                cilindrada: req.body.cilindrada,
-                anio: req.body.anio,
-                combustible: req.body.combustible,
-                tipo: req.body.tipo,
-                subtipo: req.body.subtipo
-            }
-        }, { runValidators: true }); // Para aplicar las validaciones
-        res.redirect('/detalle/' + req.params.id);
+        const vehiculo = await Vehiculo.findById(req.params.id);
+        if (!vehiculo) {
+            return res.render('error', { error: "Vehículo no encontrado" });
+        }
+        if (req.session.usuario.rol === 'admin' || (vehiculo.usuario && vehiculo.usuario.toString() === req.session.usuario._id.toString())) {
+            await Vehiculo.findByIdAndUpdate(req.params.id, {
+                $set: {
+                    matricula: req.body.matricula,
+                    marca: req.body.marca,
+                    modelo: req.body.modelo,
+                    precio: req.body.precio,
+                    cv: req.body.cv,
+                    km: req.body.km,
+                    cilindrada: req.body.cilindrada,
+                    anio: req.body.anio,
+                    combustible: req.body.combustible,
+                    tipo: req.body.tipo,
+                    subtipo: req.body.subtipo
+                }
+            }, { runValidators: true }); // Para aplicar las validaciones
+            res.redirect('/detalle/' + req.params.id);
+        } else {
+            res.render('error', { error: "No tienes permiso para editar este vehículo" });
+        }
     } catch (error) {
         let errores = Object.keys(error.errors || {});
         let mensaje = "";

@@ -89,6 +89,11 @@ let vehiculoSchema = new mongoose.Schema({
         required: [true, "El subtipo es obligatorio"],
         enum: ["Deportivo", "SUV", "Compacto", "Sedán", "Trial", "Trail", "Moto-Cross", "Scooter", "Deportiva"]
     },
+    usuario: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "usuario",
+        required: [true, "El usuario creador es obligatorio"]
+    }
 });
 
 const Vehiculo = mongoose.model('vehiculo', vehiculoSchema);
