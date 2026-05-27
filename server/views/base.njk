@@ -47,17 +47,23 @@
                                 <a class="nav-link px-3" href="/usuarios/administracion">Administración</a>
                             </li>
                         {% endif %}
-
+                        {% if usuarioSesion %}
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-primary border border-white px-3 mx-2" href="/nuevo">Nuevo vehículo</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-dark" href="/usuarios/logout">Logout</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="btn btn-dark" href="/usuarios/login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary border border-white px-3 mx-2" href="/usuarios/registro">Registro</a>
+                            </li>
+                        {% endif %}
                     </ul>
-                    {% if usuarioSesion %}
-                        <li class="nav-item">
-                            <a class="nav-link btn btn-primary border border-white px-3 mx-2" href="/nuevo">Nuevo vehículo</a>
-                        </li>
-                        <a class="btn btn-dark" href="/usuarios/logout">Logout</a>
-                    {% else %}
-                        <a class="btn btn-dark" href="/usuarios/login">Login</a>
-                        <a class="btn btn-primary border border-white px-3 mx-2" href="/usuarios/registro">Registro</a>
-                    {% endif %}
+
                 </div>
             </div>
         </nav>

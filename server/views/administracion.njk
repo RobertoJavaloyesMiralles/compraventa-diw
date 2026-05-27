@@ -1,0 +1,105 @@
+{% extends 'base.njk' %}
+
+{% block contenido %}
+<div class="container my-5">
+
+  <h2 class="mb-4" style="color: #44749d;">
+    Panel de administración
+  </h2>
+
+  <!-- Usuarios -->
+  <h5 class="mb-3 text-secondary"><i class="fa-solid fa-users me-1"></i>Usuarios ({{ usuarios | length }})</h5>
+  <div class="table-responsive mb-5">
+    <table class="table table-bordered table-hover align-middle">
+      <thead style="background-color: #44749d; color: white;">
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+          <td>{{ usuario.nombre }}</td>
+          <td>{{ usuario.email }}</td>
+          <td>
+            {% if usuario.rol == 'admin' %}
+              <span class="badge" style="background-color:#44749d">Admin</span>
+            {% else %}
+              <span class="badge bg-secondary">Usuario</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <a href="/usuarios/editar/{{ usuario._id }}" class="btn btn-sm btn-outline-secondary me-1">
+              <i class="fa-solid fa-pen-to-square"></i> Editar
+            </a>
+            <form method="POST" action="/usuarios/{{ usuario._id }}"
+                  style="display:inline"
+                  onsubmit="return confirm('¿Eliminar a {{ usuario.nombre }}?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-sm btn-outline-danger">
+                <i class="fa-solid fa-trash"></i> Eliminar
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center text-muted">No hay usuarios.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Vehículos -->
+  <h5 class="mb-3 text-secondary"><i class="fa-solid fa-car me-1"></i>Vehículos ({{ vehiculos | length }})</h5>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead style="background-color: #44749d; color: white;">
+        <tr>
+          <th>Matrícula</th>
+          <th>Marca / Modelo</th>
+          <th>Año</th>
+          <th>Precio</th>
+          <th>Combustible</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vehiculo in vehiculos %}
+        <tr>
+          <td>{{ vehiculo.matricula }}</td>
+          <td>
+            {% if vehiculo.marca %}{{ vehiculo.marca.marca }}{% endif %}
+            {% if vehiculo.modelo %} {{ vehiculo.modelo.modelo }}{% endif %}
+          </td>
+          <td>{{ vehiculo.anio }}</td>
+          <td>{{ vehiculo.precio }} €</td>
+          <td>{{ vehiculo.combustible }}</td>
+          <td class="text-center">
+            <a href="/detalle/{{ vehiculo._id }}" class="btn btn-sm btn-outline-secondary me-1">
+              <i class="fa-solid fa-eye"></i> Ficha
+            </a>
+            <a href="/editar/{{ vehiculo._id }}" class="btn btn-sm btn-outline-secondary me-1">
+              <i class="fa-solid fa-pen-to-square"></i> Editar
+            </a>
+            <form method="POST" action="/{{ vehiculo._id }}"
+                  style="display:inline"
+                  onsubmit="return confirm('¿Eliminar el vehículo {{ vehiculo.matricula }}?')">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-sm btn-outline-danger">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted">No hay vehículos.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
