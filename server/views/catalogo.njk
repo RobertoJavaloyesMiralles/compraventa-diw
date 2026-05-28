@@ -47,7 +47,7 @@
                         <select name="marca" class="form-select">
                             <option value="">Todas</option>
                             {% for m in marcas %}
-                                <option value="{{ m._id }}" {{ 'selected' if query.marca == m._id|string }}>
+                                <option value="{{ m._id }}" {{ 'selected' if query.marca == m._id }}>
                                     {{ m.marca }}
                                 </option>
                             {% endfor %}

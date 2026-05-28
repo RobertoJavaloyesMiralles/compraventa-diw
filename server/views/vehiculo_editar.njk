@@ -31,7 +31,7 @@
                                 <select name="marca" class="form-select" required>
                                     <option value="" disabled>Selecciona marca...</option>
                                     {% for m in marcas %}
-                                        <option value="{{ m._id }}" {% if vehiculo.marca and (vehiculo.marca == m._id|string or (vehiculo.marca._id and vehiculo.marca._id|string == m._id|string)) %}selected{% endif %}>{{ m.marca }}</option>
+                                        <option value="{{ m._id }}" {% if vehiculo.marca and (vehiculo.marca == m._id or (vehiculo.marca._id and vehiculo.marca._id == m._id)) %}selected{% endif %}>{{ m.marca }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -42,7 +42,7 @@
                                 <select name="modelo" class="form-select" required>
                                     <option value="" disabled>Selecciona modelo...</option>
                                     {% for mod in modelos %}
-                                        <option value="{{ mod._id }}" {% if vehiculo.modelo and (vehiculo.modelo == mod._id|string or (vehiculo.modelo._id and vehiculo.modelo._id|string == mod._id|string)) %}selected{% endif %}>{{ mod.modelo }}</option>
+                                        <option value="{{ mod._id }}" {% if vehiculo.modelo and (vehiculo.modelo == mod._id or (vehiculo.modelo._id and vehiculo.modelo._id == mod._id)) %}selected{% endif %}>{{ mod.modelo }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
