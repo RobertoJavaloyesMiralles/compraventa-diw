@@ -27,7 +27,7 @@
                                 <select name="marca" class="form-select" required>
                                     <option value="" {% if not vehiculo %}selected{% endif %} disabled>Selecciona marca...</option>
                                     {% for m in marcas %}
-                                        <option value="{{ m._id }}" {% if vehiculo and vehiculo.marca == m._id|string %}selected{% endif %}>{{ m.marca }}</option>
+                                        <option value="{{ m._id }}" {% if vehiculo and vehiculo.marca == m._id %}selected{% endif %}>{{ m.marca }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -37,7 +37,7 @@
                                 <select name="modelo" class="form-select" required>
                                     <option value="" {% if not vehiculo %}selected{% endif %} disabled>Selecciona modelo...</option>
                                     {% for mod in modelos %}
-                                        <option value="{{ mod._id }}" {% if vehiculo and vehiculo.modelo == mod._id|string %}selected{% endif %}>{{ mod.modelo }}</option>
+                                        <option value="{{ mod._id }}" {% if vehiculo and vehiculo.modelo == mod._id %}selected{% endif %}>{{ mod.modelo }}</option>
                                     {% endfor %}
                                 </select>
                             </div>

@@ -1,0 +1,64 @@
+{% extends "base.njk" %}
+
+{% block contenido %}
+<div class="container my-5">
+    <h2 class="mb-4"><i class="fas fa-shopping-cart me-2"></i>Mi Carrito</h2>
+
+    {% if carrito and carrito.length > 0 %}
+        <div class="card shadow-sm border-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Vehículo</th>
+                            <th>Matrícula</th>
+                            <th>Precio</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in carrito %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ item.vehiculo.marca.marca }} {{ item.vehiculo.modelo.modelo }}</div>
+                                    <div class="text-muted small">Tipo: {{ item.vehiculo.tipo }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ item.vehiculo.matricula }}</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">{{ item.vehiculo.precio }} €</span>
+                                </td>
+                                <td class="text-end">
+                                    <form action="/carrito/remove/{{ item.vehiculo._id }}" method="POST" class="d-inline">
+                                        <input type="hidden" name="_method" value="delete">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="2" class="text-end fw-bold">Total:</td>
+                            <td class="fw-bold fs-5 text-primary">{{ total }} €</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        
+        <div class="text-end mt-4">
+            <a href="/" class="btn btn-outline-secondary me-2">Seguir comprando</a>
+        </div>
+    {% else %}
+        <div class="alert alert-info shadow-sm">
+            <i class="fas fa-info-circle me-2"></i>Tu carrito está vacío.
+            <a href="/" class="alert-link ms-2">Volver al catálogo</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

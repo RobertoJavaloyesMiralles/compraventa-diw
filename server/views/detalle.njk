@@ -68,7 +68,7 @@
                                 <i class="fas fa-calendar-alt text-primary"></i>
                                 <div>
                                     <div class="small text-muted">Año</div>
-                                    <div class="fw-bold">{{ vehiculo.año }}</div>
+                                    <div class="fw-bold">{{ vehiculo.anio }}</div>
                                 </div>
                             </div>
                         </div>
@@ -119,9 +119,16 @@
                         </div>
                     </div>
 
-                    <div class="mt-4 d-flex gap-2">
+                    <div class="mt-4 d-flex gap-2 align-items-center">
                         <span class="badge bg-primary px-3 py-2">{{ vehiculo.tipo }}</span>
                         <span class="badge bg-light text-dark px-3 py-2">{{ vehiculo.combustible }}</span>
+                        {% if usuarioSesion and vehiculo.usuario != usuarioSesion._id %}
+                            <form action="/carrito/add/{{ vehiculo._id }}" method="POST" class="ms-auto">
+                                <button type="submit" class="btn btn-success shadow-sm">
+                                    <i class="fas fa-cart-plus me-2"></i>Añadir al Carrito
+                                </button>
+                            </form>
+                        {% endif %}
                     </div>
 
                 </div>
@@ -249,7 +256,7 @@
                             </div>
                         {% endif %}
                         <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-white text-dark shadow-sm">{{ r.año }}</span>
+                            <span class="badge bg-white text-dark shadow-sm">{{ r.anio }}</span>
                         </div>
                     </div>
                     <div class="card-body">

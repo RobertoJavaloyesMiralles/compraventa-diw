@@ -27,14 +27,6 @@ export const rol = (rol) => {
     }
 };
 
-/**
- * Obtiene todos los usuarios
- */
-router.get('/', rol('admin'), async (req, res) => {
-    const usuarios = await Usuario.find();
-    // res.render('usuarios', { usuarios });
-    res.json(usuarios);
-});
 
 /**
  * Formulario de alta de usuario
@@ -189,22 +181,6 @@ router.delete('/:id', rol('admin'), async (req, res) => {
         res.redirect('/usuarios/administracion');
     } catch (error) {
         res.render('error', { error: "Error borrando usuario" });
-    }
-});
-
-/**
- * Obtiene un usuario por id
- */
-router.get('/:id', rol('admin'), async (req, res) => {
-    try {
-        const usuario = await Usuario.findById(req.params.id);
-        if (usuario) {
-            res.json(usuario);
-        } else {
-            res.status(404).json({ error: "Usuario no encontrado" });
-        }
-    } catch (err) {
-        res.status(400).json({ error: "ID inválido" });
     }
 });
 

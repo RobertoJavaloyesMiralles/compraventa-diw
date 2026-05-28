@@ -8,9 +8,13 @@ let router = Router();
  * Obtiene todos los vehículos
  */
 router.get('/', async (req, res) => {
-    const marcas = await Marca.find();
-    const vehiculos = await Vehiculo.find().populate('marca').populate('modelo');
-    res.render('inicio', { marcas, vehiculos });
+    try {
+        const marcas = await Marca.find();
+        const vehiculos = await Vehiculo.find().populate('marca').populate('modelo');
+        res.render('inicio', { marcas, vehiculos });
+    } catch (error) {
+        res.render('error', { error: 'Error al cargar los vehículos' });
+    }
 });
 
 
@@ -18,9 +22,13 @@ router.get('/', async (req, res) => {
  * Formulario de alta
  */
 router.get('/nuevo', autenticacion, async (req, res) => {
-    const marcas = await Marca.find();
-    const modelos = await Modelo.find();
-    res.render('vehiculo_nuevo', { marcas, modelos });
+    try {
+        const marcas = await Marca.find();
+        const modelos = await Modelo.find();
+        res.render('vehiculo_nuevo', { marcas, modelos });
+    } catch (error) {
+        res.render('error', { error: 'Error al cargar el formulario' });
+    }
 });
 
 /**
@@ -47,50 +55,54 @@ router.get('/editar/:id', autenticacion, async (req, res) => {
 
 // Resultados de búsqueda
 router.get('/catalogo', async (req, res) => {
-    const { texto, marca, combustible, tipo, orden } = req.query;
+    try {
+        const { texto, marca, combustible, tipo, orden } = req.query;
 
-    let filtro = {};
+        let filtro = {};
 
-    if (texto) {
-        filtro['$or'] = [];
+        if (texto) {
+            filtro['$or'] = [];
+        }
+
+        if (marca) {
+            filtro.marca = marca;
+        }
+
+        if (combustible) {
+            filtro.combustible = combustible;
+        }
+
+        if (tipo) {
+            filtro.tipo = tipo;
+        }
+
+        let ordenacion = {};
+
+        if (orden === 'precio_asc') {
+            ordenacion.precio = 1;
+        }
+
+        if (orden === 'precio_desc') {
+            ordenacion.precio = -1;
+        }
+
+        if (orden === 'anio_asc') {
+            ordenacion.anio = 1;
+        }
+
+        if (orden === 'anio_desc') {
+            ordenacion.anio = -1;
+        }
+
+        const vehiculos = await Vehiculo.find(filtro)
+            .populate('marca').populate('modelo')
+            .sort(ordenacion);
+
+        const marcas = await Marca.find();
+        res.render('catalogo', { vehiculos, marcas, query: req.query });
+    } catch (error) {
+        res.render('error', { error: 'Error al cargar el catálogo' });
     }
-
-    if (marca) {
-        filtro.marca = marca;
-    }
-
-    if (combustible) {
-        filtro.combustible = combustible;
-    }
-
-    if (tipo) {
-        filtro.tipo = tipo;
-    }
-
-    let ordenacion = {};
-
-    if (orden === 'precio_asc') {
-        ordenacion.precio = 1;
-    }
-
-    if (orden === 'precio_desc') {
-        ordenacion.precio = -1;
-    }
-
-    if (orden === 'anio_asc') {
-        ordenacion.anio = 1;
-    }
-
-    if (orden === 'anio_desc') {
-        ordenacion.anio = -1;
-    }
-
-    const vehiculos = await Vehiculo.find(filtro)
-        .populate('marca').populate('modelo')
-        .sort(ordenacion);
-
-    const marcas = await Marca.find();
-    res.render('catalogo', { vehiculos, marcas, query: req.query });
 });
 
 /**
@@ -139,8 +151,8 @@ router.get('/detalle/:id', async (req, res) => {
             recomendaciones
         });
 
-    } catch (err) {
-        res.render('error', { error: 'Error al cargar el vehículo: ' + err.message });
+    } catch (error) {
+        res.render('error', { error: 'Error al cargar el vehículo: ' + error.message });
     }
 });
 
