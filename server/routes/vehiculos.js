@@ -9,7 +9,7 @@ let router = Router();
  */
 router.get('/', async (req, res) => {
     try {
-        const marcas = await Marca.find();
+        const marcas = await Marca.find().sort({ marca: 1 });
         const vehiculos = await Vehiculo.find().populate('marca').populate('modelo');
         res.render('inicio', { marcas, vehiculos });
     } catch (error) {
@@ -19,12 +19,24 @@ router.get('/', async (req, res) => {
 
 
 /**
+ * Obtiene los modelos de una marca específica.
+ */
+router.get('/modelos/:marcaID', async (req, res) => {
+    try {
+        const modelos = await Modelo.find({ marca: req.params.marcaID }).sort({ modelo: 1 });
+        res.json(modelos);
+    } catch (error) {
+        res.render('error', { error: 'Error al cargar los modelos' });
+    }
+});
+
+/**
  * Formulario de alta
  */
 router.get('/nuevo', autenticacion, async (req, res) => {
     try {
-        const marcas = await Marca.find();
-        const modelos = await Modelo.find();
+        const marcas = await Marca.find().sort({ marca: 1 });
+        const modelos = await Modelo.find().sort({ modelo: 1 });
         res.render('vehiculo_nuevo', { marcas, modelos });
     } catch (error) {
         res.render('error', { error: 'Error al cargar el formulario' });
@@ -37,8 +49,8 @@ router.get('/nuevo', autenticacion, async (req, res) => {
 router.get('/editar/:id', autenticacion, async (req, res) => {
     try {
         const resultado = await Vehiculo.findById(req.params.id).populate('marca').populate('modelo');
-        const marcas = await Marca.find();
-        const modelos = await Modelo.find();
+        const marcas = await Marca.find().sort({ marca: 1 });
+        const modelos = await Modelo.find().sort({ modelo: 1 });
         if (resultado) {
             if (req.session.usuario.rol === 'admin' || (resultado.usuario && resultado.usuario.toString() === req.session.usuario._id.toString())) {
                 res.render('vehiculo_editar', { vehiculo: resultado, marcas, modelos });
@@ -106,7 +118,7 @@ router.get('/catalogo', async (req, res) => {
             .skip(saltar)
             .limit(limite);
 
-        const marcas = await Marca.find();
+        const marcas = await Marca.find().sort({ marca: 1 });
         res.render('catalogo', { vehiculos, marcas, query: req.query, pagina, totalPaginas, totalVehiculos });
     } catch (error) {
         res.render('error', { error: 'Error al cargar el catálogo' });
@@ -187,8 +199,8 @@ router.post('/', autenticacion, async (req, res) => {
         await nuevoVehiculo.save();
         res.redirect('/detalle/' + nuevoVehiculo._id);
     } catch (error) {
-        const marcas = await Marca.find();
-        const modelos = await Modelo.find();
+        const marcas = await Marca.find().sort({ marca: 1 });
+        const modelos = await Modelo.find().sort({ modelo: 1 });
         let errores = Object.keys(error.errors || {});
         let mensaje = "";
 
@@ -269,8 +281,8 @@ router.put('/:id', autenticacion, async (req, res) => {
             mensaje = 'Error modificando vehículo';
         }
 
-        const marcas = await Marca.find();
-        const modelos = await Modelo.find();
+        const marcas = await Marca.find().sort({ marca: 1 });
+        const modelos = await Modelo.find().sort({ modelo: 1 });
         res.render('vehiculo_editar', {
             error: mensaje,
             vehiculo: { ...req.body, _id: req.params.id },
