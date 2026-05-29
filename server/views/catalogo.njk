@@ -1,183 +1,104 @@
 {% extends "base.njk" %}
-
 {% block contenido %}
-
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <h2 class="fw-bold m-0 text-primary">Catálogo de Vehículos</h2>
-        <span class="badge bg-primary fs-6">{{ totalVehiculos }} disponibles</span>
-    </div>
-
-    <div class="row g-5">
-
-        {# --- Columna filtros --- #}
-        <aside class="col-lg-3">
-            <div class="card p-4 sticky-top shadow-sm border-0 bg-accent" style="top: 100px;">
-                <h5 class="fw-bold mb-4 d-flex align-items-center">
-                    <i class="fas fa-sliders-h me-2 text-primary"></i> Filtros
-                </h5>
-
-                <form action="/catalogo" method="GET">
-
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase opacity-50">Búsqueda rápida</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted small"></i></span>
-                            <input
-                                type="text"
-                                name="texto"
-                                class="form-control border-start-0"
-                                placeholder="Modelo..."
-                                value="{{ query.texto if query else '' }}"
-                            >
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase opacity-50">Tipo</label>
-                        <select name="tipo" class="form-select">
-                            <option value="">Todos</option>
-                            <option value="Coche" {{ 'selected' if query.tipo == 'Coche' }}>Turismo</option>
-                            <option value="Moto" {{ 'selected' if query.tipo == 'Moto' }}>Motocicleta</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase opacity-50">Marca</label>
-                        <select name="marca" class="form-select">
-                            <option value="">Todas</option>
-                            {% for m in marcas %}
-                                <option value="{{ m._id }}" {{ 'selected' if query.marca == m._id }}>
-                                    {{ m.marca }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold text-uppercase opacity-50">Ordenar por</label>
-                        <select name="orden" class="form-select">
-                            <option value="">Por defecto</option>
-                            <option value="precio_asc" {{ 'selected' if query.orden == 'precio_asc' }}>Precio: más bajo</option>
-                            <option value="precio_desc" {{ 'selected' if query.orden == 'precio_desc' }}>Precio: más alto</option>
-                            <option value="anio_desc" {{ 'selected' if query.orden == 'anio_desc' }}>Más recientes</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 mb-2">
-                        <i class="fas fa-sync-alt me-1"></i> Aplicar
-                    </button>
-                    <a href="/catalogo" class="btn btn-link w-100 text-decoration-none text-muted small">Limpiar filtros</a>
-
-                </form>
-            </div>
-        </aside>
-
-        {# --- Columna resultados --- #}
-        <div class="col-lg-9">
-
-            {% if vehiculos.length == 0 %}
-                <div class="text-center py-5">
-                    <div class="fs-1 mb-3 text-muted opacity-25">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h3 class="fw-bold">No hay resultados</h3>
-                    <p class="text-muted">Prueba a ajustar tus filtros de búsqueda.</p>
-                    <a href="/catalogo" class="btn btn-primary mt-3">Ver todo el catálogo</a>
-                </div>
-            {% else %}
-
-                <div class="row g-4">
-                    {% for v in vehiculos %}
-                    <div class="col-md-6 animate-fade-in">
-                        <div class="card h-100 border-0 shadow-sm">
-
-                            <div class="position-relative">
-                                {% if v.imagenes and v.imagenes.length > 0 %}
-                                    <img
-                                        src="{{ v.imagenes[0] }}"
-                                        class="card-img-top"
-                                        alt="{{ v.marca.marca }} {{ v.modelo.modelo }}"
-                                        style="height: 220px; object-fit: cover;"
-                                    >
-                                {% else %}
-                                    <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 220px;">
-                                        <i class="fas fa-car fs-1 opacity-10"></i>
-                                    </div>
-                                {% endif %}
-                                <div class="position-absolute top-0 end-0 m-3">
-                                    <span class="badge bg-white text-dark shadow-sm">{{ v.anio }}</span>
-                                </div>
-                            </div>
-
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h5 class="card-title fw-bold m-0 text-primary">
-                                        {{ v.marca.marca }} {{ v.modelo.modelo }}
-                                    </h5>
-                                    <span class="fw-bold fs-5">{{ v.precio | int }} €</span>
-                                </div>
-                                
-                                <div class="d-flex gap-3 mb-3">
-                                    <span class="small text-muted"><i class="fas fa-gas-pump me-1"></i> {{ v.combustible }}</span>
-                                    <span class="small text-muted"><i class="fas fa-road me-1"></i> {{ v.km | int }} km</span>
-                                </div>
-
-                                <hr class="opacity-10 my-3">
-
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex gap-1">
-                                        <span class="badge bg-light"><i class="fas fa-info-circle me-1"></i> {{ v.tipo }}</span>
-                                        <span class="badge bg-light"><i class="fas fa-bolt me-1"></i> {{ v.cv }} CV</span>
-                                    </div>
-                                    <a href="/detalle/{{ v._id }}" class="btn btn-outline-dark btn-sm rounded-pill px-4">
-                                        Ver detalles
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-
-            {% endif %}
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h2 class="fw-bold m-0 text-primary">Catálogo de Vehículos</h2>
+            <span class="badge bg-primary fs-6">{{ totalVehiculos }} disponibles</span>
         </div>
-
-    </div>
-</div>
-    {% if totalPaginas > 1 %}
-<div class="d-flex justify-content-center mt-5">
-    <nav>
-        <ul class="pagination gap-1">
-
-            <li class="page-item {{ 'disabled' if pagina == 1 }}">
-                <a class="page-link rounded-pill px-3"
-                   href="/catalogo?{{ query | urlencode }}&pagina={{ pagina - 1 }}">
-                    <i class="fas fa-chevron-left"></i>
-                </a>
-            </li>
-
-            {% for i in range(1, totalPaginas + 1) %}
-                <li class="page-item {{ 'active' if i == pagina }}">
-                    <a class="page-link rounded-pill px-3"
-                       href="/catalogo?{{ query | urlencode }}&pagina={{ i }}">
-                        {{ i }}
-                    </a>
-                </li>
-            {% endfor %}
-
-            <li class="page-item {{ 'disabled' if pagina == totalPaginas }}">
-                <a class="page-link rounded-pill px-3"
-                   href="/catalogo?{{ query | urlencode }}&pagina={{ pagina + 1 }}">
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-            </li>
-
-        </ul>
-    </nav>
-</div>
-{% endif %}
-
-{% endblock %}
-
+        <div
+            class="row g-5">
+            {# --- Columna filtros --- #}
+            <aside class="col-lg-3">
+                <div class="card p-4 sticky-top shadow-sm border-0 bg-accent" style="top: 100px;">
+                    <h5 class="fw-bold mb-4 d-flex align-items-center">
+                        <i class="fas fa-sliders-h me-2 text-primary"></i>
+                        Filtros
+                    </h5>
+                    <form action="/catalogo" method="GET">
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase opacity-50">Búsqueda rápida</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-search text-muted small"></i>
+                                </span>
+                                <input type="text" name="texto" class="form-control border-start-0" placeholder="Modelo..." value="{{ query.texto if query else '' }}"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-uppercase opacity-50">Tipo</label>
+                                <select name="tipo" class="form-select">
+                                    <option value="">Todos</option>
+                                    <option value="Coche" {{ 'selected' if query.tipo == 'Coche' }}>Turismo</option>
+                                    <option value="Moto" {{ 'selected' if query.tipo == 'Moto' }}>Motocicleta</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-uppercase opacity-50">Marca</label>
+                                <select name="marca" class="form-select">
+                                    <option value="">Todas</option>
+                                    {% for m in marcas %}
+                                        <option value="{{ m._id }}" {{ 'selected' if query.marca == m._id }}>
+                                            {{ m.marca }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-uppercase opacity-50">Ordenar por</label>
+                                <select name="orden" class="form-select">
+                                    <option value="">Por defecto</option>
+                                    <option value="precio_asc" {{ 'selected' if query.orden == 'precio_asc' }}>Precio: más bajo</option>
+                                    <option value="precio_desc" {{ 'selected' if query.orden == 'precio_desc' }}>Precio: más alto</option>
+                                    <option value="anio_desc" {{ 'selected' if query.orden == 'anio_desc' }}>Más recientes</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mb-2">
+                                <i class="fas fa-sync-alt me-1"></i>
+                                Aplicar
+                            </button>
+                            <a href="/catalogo" class="btn btn-link w-100 text-decoration-none text-muted small">Limpiar filtros</a>
+                        </form>
+                    </div>
+                </aside>
+                {# --- Columna resultados --- #}
+                <div class="col-lg-9">
+                    {% if vehiculos.length == 0 %}
+                        <div class="text-center py-5">
+                            <div class="fs-1 mb-3 text-muted opacity-25">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3 class="fw-bold">No hay resultados</h3>
+                            <p class="text-muted">Prueba a ajustar tus filtros de búsqueda.</p>
+                            <a href="/catalogo" class="btn btn-primary mt-3">Ver todo el catálogo</a>
+                        </div>
+                    {% else %}
+                        {% include 'vehiculos.njk' %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% if totalPaginas > 1 %}
+            <div class="d-flex justify-content-center mt-5">
+                <nav>
+                    <ul class="pagination gap-1">
+                        <li class="page-item {{ 'disabled' if pagina == 1 }}">
+                            <a class="page-link rounded-pill px-3" href="/catalogo?{{ query | urlencode }}&pagina={{ pagina - 1 }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% for i in range(1, totalPaginas + 1) %}
+                            <li class="page-item {{ 'active' if i == pagina }}">
+                                <a class="page-link rounded-pill px-3" href="/catalogo?{{ query | urlencode }}&pagina={{ i }}">
+                                    {{ i }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                        <li class="page-item {{ 'disabled' if pagina == totalPaginas }}">
+                            <a class="page-link rounded-pill px-3" href="/catalogo?{{ query | urlencode }}&pagina={{ pagina + 1 }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+    {% endblock %}
