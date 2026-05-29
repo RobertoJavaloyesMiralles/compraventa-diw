@@ -33,8 +33,8 @@ app.use(session({
   cookie: { maxAge: 30 * 60 * 1000 }
 }))
 
-app.use('/build', express.static(path.resolve(process.cwd(), 'public/build')))
-app.use(express.static(path.resolve(process.cwd(), 'public')))
+app.use('/build', express.static(path.resolve(__dirname, '../public/build')))
+app.use(express.static(path.resolve(__dirname, '../public')))
 
 const env = nunjucks.configure(path.join(__dirname, 'views'), {
   autoescape: true,
