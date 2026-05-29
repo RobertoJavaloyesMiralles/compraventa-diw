@@ -30,16 +30,22 @@ app.use(session({
   secret: 'compraventa-secret',
   resave: false,
   saveUninitialized: false,
-  expires: new Date(Date.now() + (30 * 60 * 1000))
+  cookie: { maxAge: 30 * 60 * 1000 }
 }))
 
 app.use('/build', express.static(path.resolve(process.cwd(), 'public/build')))
 app.use(express.static(path.resolve(process.cwd(), 'public')))
 
-nunjucks.configure(path.join(__dirname, 'views'), {
+const env = nunjucks.configure(path.join(__dirname, 'views'), {
   autoescape: true,
   express: app,
   watch: process.env.NODE_ENV !== 'production'
+})
+
+env.addFilter('urlencode', (obj) => {
+  const params = { ...obj };
+  delete params.pagina;
+  return new URLSearchParams(params).toString();
 })
 
 app.use(methodOverride(function (req, res) {
@@ -49,6 +55,7 @@ app.use(methodOverride(function (req, res) {
     return method;
   }
 }));
+
 
 app.set('view engine', 'njk')
 app.set('views', path.join(__dirname, 'views'))
@@ -65,7 +72,6 @@ app.use((req, res, next) => {
 
 app.use('/usuarios', usuariosRouter)
 app.use('/', vehiculosRouter)
-app.use('/vehiculos', vehiculosRouter)
 app.use('/vehiculos/:id/comentarios', comentariosRouter)
 app.use('/carrito', carritoRouter)
 
@@ -73,3 +79,4 @@ const port = process.env.PORT || 3001
 app.listen(port, () => {
   console.log(`Servidor: http://localhost:${port}`)
 })
+

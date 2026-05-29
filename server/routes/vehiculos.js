@@ -57,6 +57,9 @@ router.get('/editar/:id', autenticacion, async (req, res) => {
 router.get('/catalogo', async (req, res) => {
     try {
         const { texto, marca, combustible, tipo, orden } = req.query;
+        const pagina = parseInt(req.query.pagina) || 1;
+        const limite = 3;
+        const saltar = (pagina - 1) * limite;
 
         let filtro = {};
 
@@ -94,12 +97,17 @@ router.get('/catalogo', async (req, res) => {
             ordenacion.anio = -1;
         }
 
+        const totalVehiculos = await Vehiculo.countDocuments(filtro);
+        const totalPaginas = Math.ceil(totalVehiculos / limite);
+
         const vehiculos = await Vehiculo.find(filtro)
             .populate('marca').populate('modelo')
-            .sort(ordenacion);
+            .sort(ordenacion)
+            .skip(saltar)
+            .limit(limite);
 
         const marcas = await Marca.find();
-        res.render('catalogo', { vehiculos, marcas, query: req.query });
+        res.render('catalogo', { vehiculos, marcas, query: req.query, pagina, totalPaginas, totalVehiculos });
     } catch (error) {
         res.render('error', { error: 'Error al cargar el catálogo' });
     }

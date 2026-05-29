@@ -5,7 +5,7 @@
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-5">
         <h2 class="fw-bold m-0 text-primary">Catálogo de Vehículos</h2>
-        <span class="badge bg-primary fs-6">{{ vehiculos.length }} disponibles</span>
+        <span class="badge bg-primary fs-6">{{ totalVehiculos }} disponibles</span>
     </div>
 
     <div class="row g-5">
@@ -146,7 +146,38 @@
 
     </div>
 </div>
+    {% if totalPaginas > 1 %}
+<div class="d-flex justify-content-center mt-5">
+    <nav>
+        <ul class="pagination gap-1">
 
+            <li class="page-item {{ 'disabled' if pagina == 1 }}">
+                <a class="page-link rounded-pill px-3"
+                   href="/catalogo?{{ query | urlencode }}&pagina={{ pagina - 1 }}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+
+            {% for i in range(1, totalPaginas + 1) %}
+                <li class="page-item {{ 'active' if i == pagina }}">
+                    <a class="page-link rounded-pill px-3"
+                       href="/catalogo?{{ query | urlencode }}&pagina={{ i }}">
+                        {{ i }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            <li class="page-item {{ 'disabled' if pagina == totalPaginas }}">
+                <a class="page-link rounded-pill px-3"
+                   href="/catalogo?{{ query | urlencode }}&pagina={{ pagina + 1 }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+</div>
+{% endif %}
 
 {% endblock %}
 
