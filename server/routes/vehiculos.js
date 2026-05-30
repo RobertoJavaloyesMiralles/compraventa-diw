@@ -68,46 +68,46 @@ router.get('/editar/:id', autenticacion, async (req, res) => {
 // Resultados de búsqueda
 router.get('/catalogo', async (req, res) => {
     try {
-        const { texto, marca, combustible, tipo, orden } = req.query;
+        const { texto, marca, combustible, tipo, orden, precioMax, anioMin } = req.query;
         const pagina = parseInt(req.query.pagina) || 1;
-        const limite = 3;
+        const limite = 6;
         const saltar = (pagina - 1) * limite;
 
         let filtro = {};
 
+        // Búsqueda por texto: busca en matricula directamente,
+        // y en nombres de marca/modelo buscando primero sus IDs
         if (texto) {
-            filtro['$or'] = [];
+            const regex = new RegExp(texto, 'i');
+
+            const marcasEncontradas = await Marca.find({ marca: regex }).select('_id');
+            const modelosEncontrados = await Modelo.find({ modelo: regex }).select('_id');
+
+            const idsMarcas = marcasEncontradas.map(m => m._id);
+            const idsModelos = modelosEncontrados.map(m => m._id);
+
+            filtro['$or'] = [
+                { matricula: regex },
+                { marca: { $in: idsMarcas } },
+                { modelo: { $in: idsModelos } }
+            ];
         }
 
-        if (marca) {
-            filtro.marca = marca;
-        }
+        if (marca) filtro.marca = marca;
+        if (combustible) filtro.combustible = combustible;
+        if (tipo) filtro.tipo = tipo;
 
-        if (combustible) {
-            filtro.combustible = combustible;
-        }
+        // Precio máximo
+        if (precioMax) filtro.precio = { $lte: Number(precioMax) };
 
-        if (tipo) {
-            filtro.tipo = tipo;
-        }
+        // Año mínimo
+        if (anioMin) filtro.anio = { $gte: Number(anioMin) };
 
         let ordenacion = {};
-
-        if (orden === 'precio_asc') {
-            ordenacion.precio = 1;
-        }
-
-        if (orden === 'precio_desc') {
-            ordenacion.precio = -1;
-        }
-
-        if (orden === 'anio_asc') {
-            ordenacion.anio = 1;
-        }
-
-        if (orden === 'anio_desc') {
-            ordenacion.anio = -1;
-        }
+        if (orden === 'precio_asc') ordenacion.precio = 1;
+        if (orden === 'precio_desc') ordenacion.precio = -1;
+        if (orden === 'anio_asc') ordenacion.anio = 1;
+        if (orden === 'anio_desc') ordenacion.anio = -1;
 
         const totalVehiculos = await Vehiculo.countDocuments(filtro);
         const totalPaginas = Math.ceil(totalVehiculos / limite);
@@ -118,8 +118,17 @@ router.get('/catalogo', async (req, res) => {
             .skip(saltar)
             .limit(limite);
 
-        const marcas = await Marca.find().sort({ marca: 1 });
-        res.render('catalogo', { vehiculos, marcas, query: req.query, pagina, totalPaginas, totalVehiculos });
+        const marcas = await Marca.find();
+
+        res.render('catalogo', {
+            vehiculos,
+            marcas,
+            query: req.query,
+            pagina,
+            totalPaginas,
+            totalVehiculos
+        });
+
     } catch (error) {
         res.render('error', { error: 'Error al cargar el catálogo' });
     }
